@@ -6,6 +6,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
+using Newtonsoft.Json;
+
 namespace MetroGraphApp
 {
     /// <summary>
@@ -51,6 +53,7 @@ namespace MetroGraphApp
             set { m_y = value; }
         }
 
+        [JsonIgnore] //Yiyang: just for printing the result to Json string
         /// <summary>
         /// 获取从该站点出发的路径集合。该属性始终不为空引用。
         /// </summary>

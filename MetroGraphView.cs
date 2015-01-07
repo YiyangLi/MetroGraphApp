@@ -404,7 +404,7 @@ namespace MetroGraphApp
         /// <param name="endNode">结束节点。</param>
         /// <param name="line">目标线路（为null表示不限制线路）。</param>
         /// <returns>乘车路线列表。</returns>
-        private List<MetroPath> FindShortestPaths(MetroNode startNode, MetroNode endNode, MetroLine line)
+        public List<MetroPath> FindShortestPaths(MetroNode startNode, MetroNode endNode, MetroLine line)
         {
             List<MetroPath> pathtList = new List<MetroPath>();
             if (startNode == endNode) return pathtList;
@@ -449,6 +449,50 @@ namespace MetroGraphApp
                 }
             }
 
+            return pathtList;
+        }
+
+        /// <summary>
+        /// Yiyang: Find all path
+        /// </summary>
+        /// <param name="startNode">开始节点。</param>
+        /// <param name="endNode">结束节点。</param>
+        /// <returns>乘车路线列表。</returns>
+        public List<MetroPath> FindAllPaths(MetroNode startNode, MetroNode endNode)
+        {
+            List<MetroPath> pathtList = new List<MetroPath>();
+            if (startNode == endNode) return pathtList;
+
+            //路径队列，用于遍历路径
+            Queue<MetroPath> pathQueue = new Queue<MetroPath>();
+            pathQueue.Enqueue(new MetroPath());
+
+            while (pathQueue.Count > 0)
+            {
+                var path = pathQueue.Dequeue();
+
+                //如果已经超过最短路径，则直接返回
+                if (pathtList.Count > 0 && path.Links.Count > pathtList[0].Links.Count)
+                    continue;
+
+                //路径的最后一个节点
+                MetroNode prevNode = path.Links.Count > 0 ? path.Links[path.Links.Count - 1].From : null;
+                MetroNode lastNode = path.Links.Count > 0 ? path.Links[path.Links.Count - 1].To : startNode;
+
+                //继续寻找后续节点
+                foreach (var link in lastNode.Links.Where(c => c.To != prevNode))
+                {
+                    if (link.To == endNode)
+                    {
+                        MetroPath newPath = path.Append(link);
+                        pathtList.Add(newPath);
+                    }
+                    else if (!path.ContainsNode(link.To))
+                    {
+                        pathQueue.Enqueue(path.Append(link));
+                    }
+                }
+            }
             return pathtList;
         }
 
